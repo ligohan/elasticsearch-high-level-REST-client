@@ -116,6 +116,29 @@ public class SearchApi {
         }
     }
 
+
+    /**
+     * 　* @Description match all 查询
+     *
+     * @author lee jun
+     * @date 2018/4/25 10:04
+     * 　* @param
+     * 　* @return
+     * 　* @throws
+     */
+    @Test
+    public void demo5() {
+
+        QueryBuilder matchAllQueryBuilder = QueryBuilders
+                .matchAllQuery();
+
+        SearchSourceBuilder builder = new SearchSourceBuilder()
+                .query(matchAllQueryBuilder)
+                .timeout(new TimeValue(60, TimeUnit.SECONDS));
+
+        excuteTestSearch(builder);
+    }
+
     /**
      * 　* @Description sort 排序
      *
@@ -208,27 +231,7 @@ public class SearchApi {
         excuteTestSearch(builder);
     }
 
-    /**
-     * 　* @Description match all 查询
-     *
-     * @author lee jun
-     * @date 2018/4/25 10:04
-     * 　* @param
-     * 　* @return
-     * 　* @throws
-     */
-    @Test
-    public void demo5() {
 
-        QueryBuilder matchAllQueryBuilder = QueryBuilders
-                .matchAllQuery();
-
-        SearchSourceBuilder builder = new SearchSourceBuilder()
-                .query(matchAllQueryBuilder)
-                .timeout(new TimeValue(60, TimeUnit.SECONDS));
-
-        excuteTestSearch(builder);
-    }
 
     //--------聚合-----------
 
