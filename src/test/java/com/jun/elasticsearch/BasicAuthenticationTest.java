@@ -1,4 +1,4 @@
-package com.jun.elasticsearch.entity;
+package com.jun.elasticsearch;
 
 import com.jun.elasticsearch.api.ElasticsearchApi;
 import org.apache.http.HttpHost;
