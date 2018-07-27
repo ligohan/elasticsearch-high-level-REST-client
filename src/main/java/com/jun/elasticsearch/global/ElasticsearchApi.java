@@ -1,4 +1,4 @@
-package com.jun.elasticsearch.api;
+package com.jun.elasticsearch.global;
 
 public class ElasticsearchApi {
 

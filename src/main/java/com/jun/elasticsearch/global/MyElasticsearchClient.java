@@ -1,11 +1,12 @@
-package com.jun.elasticsearch.entity;
+package com.jun.elasticsearch.global;
 
-import com.jun.elasticsearch.api.ElasticsearchApi;
+import lombok.extern.log4j.Log4j2;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.inject.Singleton;
 
+@Log4j2
 public class MyElasticsearchClient {
 
     private static RestHighLevelClient client = null;
@@ -21,12 +22,22 @@ public class MyElasticsearchClient {
                                 )
                         );
                     }catch (Exception e){
-                        e.printStackTrace();
+                        log.error(e.getStackTrace());
                     }
                 }
             }
         }
         return client;
+    }
+
+    public void destroy() {
+        try {
+            if (client != null) {
+                client.close();
+            }
+        } catch (final Exception e) {
+            log.error("Error closing ElasticSearch client: ", e);
+        }
     }
 
 }

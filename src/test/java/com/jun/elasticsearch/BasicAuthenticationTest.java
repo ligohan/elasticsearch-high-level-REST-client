@@ -1,6 +1,6 @@
 package com.jun.elasticsearch;
 
-import com.jun.elasticsearch.api.ElasticsearchApi;
+import com.jun.elasticsearch.global.ElasticsearchApi;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration monitoringInterval="3600" shutdownHook="disable">
+    <Properties>
+        <Property name="basedir">log</Property>
+        <Property name="framework">framework</Property>
+        <Property name="mapper">mapper</Property>
+        <Property name="service">service</Property>
+    </Properties>
+    <Appenders>
+        <Console name="to-console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{[%d{yyyy-MM-dd HH:mm:ss.SSS}] - [%p] - [%c:%L] - [Method = %M] - [%m]}%n"/>
+        </Console>
+
+        <RollingFile name="${framework}" fileName="${basedir}/${framework}.log" append="true" filePattern="${basedir}/$${date:yyyy-MM}/${framework}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%highlight{[%d{yyyy-MM-dd HH:mm:ss.SSS}] - [%p] - [%c:%L] - [Method = %M] - [%m]}%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="30" compressionLevel="9">
+                <Delete basePath="${basedir}" maxDepth="2">
+                    <IfFileName glob="*/*.log.gz"/>
+                    <IfLastModified age="7d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <RollingFile name="${service}" fileName="${basedir}/${service}.log" append="true" filePattern="${basedir}/$${date:yyyy-MM}/${service}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%highlight{[%d{yyyy-MM-dd HH:mm:ss.SSS}] - [%p] - [%c:%L] - [Method = %M] - [%m]}%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="30" compressionLevel="9">
+                <Delete basePath="${basedir}" maxDepth="2">
+                    <IfFileName glob="*/*.log.gz"/>
+                    <IfLastModified age="7d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+        <AsyncRoot level="info">
+            <AppenderRef ref="to-console"/>
+            <AppenderRef ref="${framework}"/>
+            <AppenderRef ref="${service}"/>
+            <!--<AppenderRef ref="${mapper}"/>-->
+        </AsyncRoot>
+
+        <!--additivity 字段，通过配置该字段，我们可以规定是否将日志事件传递到 Logger 的父结点处理，其默认值为true（即默认交给parent Logger处理）-->
+        <!--异步的时候 includeLocation="true" 才会显示具体的行号，以及日志所在的类名；如果设置为false，哪怕<Pattern>设置了输出行号也不会显示出来；-->
+
+        <AsyncLogger name="com.jun" level="info" additivity="false" includeLocation="true">
+            <AppenderRef ref="to-console"/>
+            <AppenderRef ref="${service}"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="org.elasticsearch" level="info" additivity="false" includeLocation="true">
+            <AppenderRef ref="${framework}"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="org.springframework" level="info" additivity="false" includeLocation="true">
+            <AppenderRef ref="${framework}"/>
+        </AsyncLogger>
+    </Loggers>
+
+</Configuration>

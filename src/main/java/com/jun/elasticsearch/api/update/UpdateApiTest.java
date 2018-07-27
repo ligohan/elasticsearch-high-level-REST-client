@@ -1,127 +1,69 @@
 package com.jun.elasticsearch.api.update;
 
-import com.jun.elasticsearch.api.ElasticsearchApi;
-import org.apache.http.HttpHost;
+import com.jun.elasticsearch.entity.CustomAudience;
+import com.jun.elasticsearch.entity.Targeting;
+import com.jun.elasticsearch.global.MyElasticsearchClient;
+import com.jun.util.JSONUtil;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
-import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.index.get.GetResult;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.*;
 
 public class UpdateApiTest {
 
-    @Test
-    public void updateApiSyncTest() {
-        try (final RestHighLevelClient client = new RestHighLevelClient(
-                RestClient.builder(
-                        new HttpHost(ElasticsearchApi.HOST_NAME, ElasticsearchApi.PORT, ElasticsearchApi.SCHEME)
-                )
-        )) {
-            // Map
-            final HashMap<String, Object> map = new HashMap<>();
-            map.put("message", "updated");
-
-            // XContentBuilder
-            final XContentBuilder builder = XContentFactory.jsonBuilder();
-            builder.startObject();
-            {
-                builder.field("message", "updated");
-            }
-            builder.endObject();
+    public void updateApiSync(String index, String type, String id, String jsonString) {
+        try (final RestHighLevelClient client = MyElasticsearchClient.getInstance()){
 
             final UpdateRequest request = new UpdateRequest()
-                    .index("index")
-                    .type("logs")
-                    .id("id")
+                    .index(index)
+                    .type(type)
+                    .id(id)
                     .timeout(TimeValue.timeValueMinutes(2))
                     .docAsUpsert(true)
                     .fetchSource(true)
-                    // Map
-                    .doc(map);
-                    // XContentBuilder
-                    // .doc(builder);
-                    // Object key-pairs
-                    // .doc("message", "updated");
+                    .doc(jsonString, XContentType.JSON);
 
             final UpdateResponse response = client.update(request);
 
-            response.getIndex();
-            response.getType();
-            response.getId();
+            System.out.println("response：\n" +
+                    "index：" + response.getIndex() + "\n" +
+                    "type：" + response.getType() + "\n" +
+                    "id：" + response.getId() + "\n" +
+                    "version：" + response.getVersion());
+            System.out.println(request.toString());
 
-            System.out.println(response.getResult());
-            System.out.println(response.status());
-
-            final GetResult result = response.getGetResult();
-            if (result.isExists()) {
-                result.sourceAsString();
-                result.sourceAsMap().get("message");
-            }
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Test
-    public void updateApiAsyncTest() {
-        try (final RestHighLevelClient client = new RestHighLevelClient(
-                RestClient.builder(
-                        new HttpHost(ElasticsearchApi.HOST_NAME, ElasticsearchApi.PORT, ElasticsearchApi.SCHEME)
-                )
-        )) {
-            // Map
-            final HashMap<String, Object> map = new HashMap<>();
-            map.put("message", "updated");
-
-            // XContentBuilder
-            final XContentBuilder builder = XContentFactory.jsonBuilder();
-            builder.startObject();
-            {
-                builder.field("message", "updated");
-            }
-            builder.endObject();
+    public void updateApiAsyncTest(String index, String type, String id, String jsonString) {
+        try (final RestHighLevelClient client = MyElasticsearchClient.getInstance()){
 
             final UpdateRequest request = new UpdateRequest()
-                    .index("index")
-                    .type("logs")
-                    .id("id")
+                    .index(index)
+                    .type(type)
+                    .id(id)
                     .timeout(TimeValue.timeValueMinutes(2))
                     .docAsUpsert(true)
-                    // Map
-                    .doc(map);
-            // XContentBuilder
-            // .doc(builder);
-            // Object key-pairs
-            // .doc("message", "updated");
+                    .fetchSource(true)
+                    .doc(jsonString, XContentType.JSON);
 
-            final CompletableFuture<String> future = new CompletableFuture<>();
             client.updateAsync(request, new ActionListener<UpdateResponse>() {
                 @Override
                 public void onResponse(UpdateResponse response) {
-                    response.getIndex();
-                    response.getType();
-                    response.getId();
-
-                    System.out.println(response.getResult());
-                    System.out.println(response.status());
-
-                    final GetResult result = response.getGetResult();
-                    if (result.isExists()) {
-                        result.sourceAsString();
-                        result.sourceAsMap().get("message");
-                    }
-
-                    future.complete("ok");
+                    System.out.println("response：\n" +
+                            "index：" + response.getIndex() + "\n" +
+                            "type：" + response.getType() + "\n" +
+                            "id：" + response.getId() + "\n" +
+                            "version：" + response.getVersion());
+                    System.out.println(request.toString());
                 }
 
                 @Override
@@ -130,9 +72,33 @@ public class UpdateApiTest {
                 }
             });
 
-            future.get();
-        } catch (final IOException | InterruptedException | ExecutionException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    public void testUpdate() {
+        CustomAudience customAudience = new CustomAudience();
+        customAudience.setId("23842852893410737");
+        customAudience.setName("类似受众 (EEA, 1%) - ATC-intimate-180d");
+
+        Targeting targeting = new Targeting();
+        List<String> customAudiences = new ArrayList<>();
+        customAudiences.add(customAudience.getId());
+        targeting.setCustomAudiences(Arrays.asList(customAudience));
+
+        targeting.setDevicePlatforms(Arrays.asList("mobile", "desktop"));
+
+        Map<String, List<String>> geoLocations = new HashMap<>(1);
+        geoLocations.put("location_types", Arrays.asList("home", "recent"));
+        geoLocations.put("cities", Arrays.asList("beijing"));
+        geoLocations.put("countries", Arrays.asList("china"));
+        targeting.setGeoLocations(geoLocations);
+
+        targeting.setPublisherPlatforms(Arrays.asList("instagram", "messenger"));
+
+        updateApiSync("test", "targeting", "b6AS1mQBRuvjKT8Aq6mn", JSONUtil.ObjectToJSONStringInSnakeCase(targeting));
+    }
+
 }

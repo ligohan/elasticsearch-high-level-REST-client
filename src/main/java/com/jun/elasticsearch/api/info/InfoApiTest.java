@@ -1,6 +1,6 @@
 package com.jun.elasticsearch.api.info;
 
-import com.jun.elasticsearch.api.ElasticsearchApi;
+import com.jun.elasticsearch.global.ElasticsearchApi;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.main.MainResponse;
 import org.elasticsearch.client.RestClient;

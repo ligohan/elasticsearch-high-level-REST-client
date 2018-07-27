@@ -1,6 +1,6 @@
 package com.jun.elasticsearch.api.delete;
 
-import com.jun.elasticsearch.api.ElasticsearchApi;
+import com.jun.elasticsearch.global.ElasticsearchApi;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.delete.DeleteRequest;

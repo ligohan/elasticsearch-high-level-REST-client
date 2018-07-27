@@ -1,6 +1,6 @@
 package com.jun.elasticsearch.api.search;
 
-import com.jun.elasticsearch.entity.MyElasticsearchClient;
+import com.jun.elasticsearch.global.MyElasticsearchClient;
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.search.SearchRequest;

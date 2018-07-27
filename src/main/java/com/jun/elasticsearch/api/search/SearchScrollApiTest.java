@@ -1,6 +1,6 @@
 package com.jun.elasticsearch.api.search;
 
-import com.jun.elasticsearch.entity.MyElasticsearchClient;
+import com.jun.elasticsearch.global.MyElasticsearchClient;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.TimeValue;
